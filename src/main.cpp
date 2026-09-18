@@ -61,6 +61,26 @@ vector<Token>tokenize(string &str){
     return tokens;
 }
 
+string tokens_to_asm(vector<Token>&tokens){
+    stringstream output;
+    output<<"global _start\n_start:\n";
+    
+    for(int i=0;i<tokens.size();i++){
+        const Token& token=tokens[i];
+
+        if(token.type==TokenType::_return){
+            if(i+1<tokens.size() && tokens[i+1].type==TokenType::int_lit){
+                if(i+2<tokens.size() && tokens[i+2].type==TokenType::semi){
+                    output<<"    mov rax, 60\n";
+                    output<<"    mov rdi, "<<tokens[i+1].value.value()<<endl;
+                    output<<"    syscall";
+                }
+            }
+        }
+    }
+    return output.str();
+}
+
 int main(int argc, char* argv[]) {
     if(argc!=2){
         cerr<<"Incorrect usage. Correct Usage is... "<<endl;
@@ -78,7 +98,14 @@ int main(int argc, char* argv[]) {
 
    vector<Token> tokens = tokenize(contents);
 
-    cout << contents << endl;
+    {
+        fstream file("out.asm",ios::out);
+        file << tokens_to_asm(tokens);
+    }
+
+    system("nasm -felf64 out.asm");
+    system("ld -o out out.o");
+
 
     return EXIT_SUCCESS;
 }
