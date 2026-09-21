@@ -18,16 +18,14 @@ struct Token{
 vector<Token>tokenize(string &str){
     string buf;
     vector<Token>tokens;
-    for(int i=0;i<str.size();i++){
+    int i=0;
+    while(i<str.size()){
         char c=str[i];
         if(isalpha(c)){
-            buf.push_back(c);
-            i++;
-            while(isalnum(str[i])){
+            while(i < str.size() && isalnum(str[i])){
                 buf.push_back(str[i]);
                 i++;
             }
-            i--;
             if(buf=="return"){
                 tokens.push_back({TokenType::_return});
                 buf.clear();
@@ -37,22 +35,20 @@ vector<Token>tokenize(string &str){
             }
         }
         else if(isdigit(c)){
-            buf.push_back(c);
-            i++;
-            while(isdigit(str[i])){
+            while(i < str.size() && isdigit(str[i])){
                 buf.push_back(str[i]);
                 i++;
             }
-            i--;
             tokens.push_back({TokenType::int_lit, buf});
             buf.clear();
         }
         else if(c==';'){
             tokens.push_back({TokenType::semi});
             buf.clear();
+            i++;
         }
         else if(isspace(c)){
-            continue;
+            i++;
         }else{
                 cerr<<"You messes up!"<<endl;
                 exit(EXIT_FAILURE);
@@ -72,7 +68,7 @@ string tokens_to_asm(vector<Token>&tokens){
             if(i+1<tokens.size() && tokens[i+1].type==TokenType::int_lit){
                 if(i+2<tokens.size() && tokens[i+2].type==TokenType::semi){
                     output<<"    mov rax, 60\n";
-                    output<<"    mov rdi, "<<tokens[i+1].value.value()<<endl;
+                    output<<"    mov rdi, "<<tokens[i+1].value.value()<<endl;   
                     output<<"    syscall";
                 }
             }
@@ -88,23 +84,26 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
+    //reading a puting the contest into string = contents 
     string contents;
     {
         stringstream contents_stream;
-        fstream input(argv[1], ios::in);
-        contents_stream<<input.rdbuf();
+        fstream input_file_content(argv[1], ios::in);
+        contents_stream<<input_file_content.rdbuf();
         contents=contents_stream.str();
-   }
+    }
+   // cout<<"the string we get is: "<<contents<<endl;
 
+   //tokenizing the string
    vector<Token> tokens = tokenize(contents);
-
+    
     {
-        fstream file("out.asm",ios::out);
+        fstream file("out.asm",ios::out); //create and open that file
         file << tokens_to_asm(tokens);
     }
 
-    system("nasm -felf64 out.asm");
-    system("ld -o out out.o");
+    system("nasm -felf64 out.asm"); //assembler gives object file
+    system("ld -o out out.o"); //its a linker gives executable code
 
 
     return EXIT_SUCCESS;
