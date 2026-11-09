@@ -18,6 +18,8 @@ class Parser{
            {
            }
 
+           //This function tries to parse an expression.
+           //we consume the integer token and store it inside a NodeExpr.
            optional<NodeExpr> parse_expr(){
                 if(peak().has_value() && peak().value().type == TokenType::int_lit){
                     return NodeExpr{.int_lit = consume()};
@@ -30,7 +32,7 @@ class Parser{
                 optional<NodeExit> exit_node;
                 while(peak().has_value()){
                     if(peak().value().type== TokenType::exit){
-                        consume();  
+                        consume();
                         if(auto node_expr=parse_expr()){
                             exit_node = NodeExit {.expr  = node_expr.value()};
                         }else{

@@ -29,15 +29,19 @@ int main(int argc, char* argv[]) {
    Tokenizer tokenizer(move(contents));
    vector<Token> tokens = tokenizer.tokenize();
 
+   //parsing the tokens
    Parser parser(move(tokens));
    optional<NodeExit>tree=parser.parse();
    if(!tree.has_value()){
     cerr<<"No Exit Statement Found"<<endl;
     exit(EXIT_FAILURE);
    }
+
+   //generating asembly code
    Generator generator(tree.value());
+   //create and open that file
     {
-        fstream file("out.asm",ios::out); //create and open that file
+        fstream file("out.asm",ios::out); 
         file << generator.generate();
     }
 
