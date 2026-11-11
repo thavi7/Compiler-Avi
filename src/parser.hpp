@@ -31,7 +31,8 @@ class Parser{
            optional<NodeExit> parse(){
                 optional<NodeExit> exit_node;
                 while(peak().has_value()){
-                    if(peak().value().type== TokenType::exit){
+                    if(peak().value().type== TokenType::exit && peak(1).has_value() && peak(1).value().type==TokenType::open_paren){
+                        consume();
                         consume();
                         if(auto node_expr=parse_expr()){
                             exit_node = NodeExit {.expr  = node_expr.value()};
@@ -39,10 +40,18 @@ class Parser{
                             cerr<<"Invalid Expression !"<<endl;
                             exit(EXIT_FAILURE);
                         }
+                        if(peak().has_value() && peak().value().type == TokenType::close_paren){
+                            consume();
+                        }
+                        else{
+                            cerr<<"Expected ) !"<<endl;
+                            exit(EXIT_FAILURE);
+                        }
                         if(peak().has_value() && peak().value().type == TokenType::semi){
                             consume();
-                        }else{
-                            cerr<<"Invalid Expression !"<<endl;
+                        }
+                        else{
+                            cerr<<"Expected Semicolon !"<<endl;
                             exit(EXIT_FAILURE);
                         }
                     }   

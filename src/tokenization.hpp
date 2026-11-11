@@ -7,7 +7,9 @@ using namespace std;
 enum class TokenType{
     exit,
     int_lit,
-    semi
+    semi,
+    open_paren,
+    close_paren,
 };
 
 struct Token{
@@ -50,6 +52,14 @@ vector<Token>tokenize(){
             tokens.push_back({TokenType::int_lit, buf});
              buf.clear();
              continue;
+        }
+        else if(peak().value() == '(' ){
+            tokens.push_back({TokenType::open_paren});
+            consume();
+        }
+        else if(peak().value() == ')' ){
+            tokens.push_back({TokenType::close_paren});
+            consume();
         }
         else if(peak().value() == ';' ){
             tokens.push_back({TokenType::semi});

@@ -1,1 +1,2 @@
-exit 34;
+define x = 7;
+exit (7);

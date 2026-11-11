@@ -1,8 +1,18 @@
 $$
 \begin{align}
-[\text{exit}] \to exit([\text{expr}]); 
-% An exit statement must contain the keyword exit, followed by parentheses containing an expression, followed by a semicolon.
-\\
-[\text{expr}] &\to \text{int\_lit}
+[\text{prog}] &\to [\text{stmt}]^*; \\
+
+[\text{stmt}] &\to 
+\begin{cases}
+    exit([\text{expr}]);\\
+    define\space\text{ident} = 
+    [\text{expr}];
+\end{cases}\\
+
+[\text{expr}] &\to 
+\begin{cases}
+    \text{int\_lit}\\
+    \text{ident}
+\end{cases}\\
 \end{align}
 $$
